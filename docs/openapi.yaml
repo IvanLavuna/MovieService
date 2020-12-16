@@ -1,0 +1,677 @@
+openapi: 3.0.1
+info:
+  title: Swagger Cinema service
+  description: 'With Cinema service you can easily watch all info about
+                movies that are currently coming out'
+  contact:
+    email: admin@gmail.com
+  version: 1.0.0
+tags:
+- name: user
+  description: Operations about user
+- name: movie
+  description: Information about movies and our affiche
+
+paths:
+  /user/register:
+    post:
+      tags:
+      - user
+      parameters:
+      - name: username
+        in: query
+        description: Your Username
+        required: true
+        schema:
+          type: string
+      - name: firstname
+        in: query
+        description: Your real name
+        required: true
+        schema:
+          type: string
+      - name: lastname
+        in: query
+        description: Your real lastname
+        required: true
+        schema:
+          type: string
+      - name: email
+        in: query
+        description: Your email
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: Your password
+        required: true
+        schema:
+          type: string
+      - name: phone_number
+        in: query
+        description: Your phone number
+        required: false
+        schema:
+          type: string
+      - name: photo
+        in: query
+        description: your photo
+        required: false
+        schema:
+          type: string
+      summary: Creates account to user
+      description: This can be done by anyone
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request. Missing arguments
+        '409':
+          description: Conflict. Such email or username already exist
+
+
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Logs user into system
+      operationId: loginUser
+      parameters:
+      - name: username # [one of items: username or email -  must be defined ]
+        in: query
+        description: user's name for login
+        required: false
+        schema:
+          $ref: '#/components/schemas/User'
+      - name: email
+        in: query
+        description: user's email
+        required: false
+        schema:
+          $ref: '#/components/schemas/User'
+
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not found
+        '406':
+          description: Not acceptable
+          content: {}
+
+  /user/logout:
+    get:
+      tags:
+      - user
+      security:
+      - bearer: []
+      summary: Logs out current logged in user session
+      description: User must be logged in
+      operationId: logoutUser
+      responses:
+        '200':
+          description: logged out
+
+  /user/reserve:
+    post:
+      tags:
+        - user
+      security:
+        - bearer: []
+      summary: specifies that some user is reserved some place for some movie
+      description: Oppearation is allowed for logged in user
+      operationId: reserve
+
+      parameters:
+      - name: movieId
+        in: query
+        required: true
+        schema:
+          type: integer
+          items:
+            $ref: '#/components/schemas/Reservation'
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+          items:
+            $ref: '#/components/schemas/Reservation'
+      - name: date_time
+        in: query
+        required: true
+        schema:
+          type: integer
+          items:
+            $ref: '#/components/schemas/Reservation'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      responses:
+        '201':
+          description: Successful operation, return same entity with id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '401':
+          description: Invalid token.
+        '400':
+          description: Bad Request
+        '500':
+          description: All places are already reserved or no such date_time
+
+  /movie:
+    get:
+      tags:
+      - movie
+      summary: Returns all movies
+      description: Option is available for not authorised users
+      operationId: getMovies
+      responses:
+        '200':
+          description: all is ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '401':
+          description: Token not valid.
+
+    post:
+      tags:
+      - movie
+      security:
+      - bearer: [admin]
+      summary: Add new movie
+      description: This can only be done by admin
+      operationId: addNewMovie
+      parameters:
+      - name: name
+        in: query
+        description: new movie name
+        required: true
+        schema:
+          $ref: '#/components/schemas/Movie'
+
+      - name: picture
+        in: query
+        description: Photo of movie
+        required: false
+        schema:
+          $ref: '#/components/schemas/Movie'
+
+      - name: info
+        in: query
+        description: Some information about movie
+        required: false
+        schema:
+          $ref: '#/components/schemas/Movie'
+
+      - name: actors
+        in: query
+        description: actors which played in movie
+        required: false
+        schema:
+          $ref: '#/components/schemas/Movie'
+
+      - name: duration
+        in: query
+        description: duration time of movie
+        required: true
+        schema:
+          $ref: '#/components/schemas/Movie'
+
+      requestBody:
+        description: Updated movie object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+        required: true
+
+      responses:
+        '200':
+          description: movie is successfuly added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          description: Bad Request. Missing arguments
+
+  /movie/{id}:
+    get:
+      tags:
+      - movie
+      summary: Returns movie by id
+      description: Oppearation is allowed for anyone
+      operationId: getMovieById
+
+      parameters:
+      - name: id
+        in: path
+        description: Id of specified movie
+        required: true
+        schema:
+          type: integer
+
+      responses:
+        '200':
+          description: Specified film is found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '404':
+          description: Not found
+    put:
+      tags:
+        - movie
+      security:
+        - bearer: [ admin ]
+      summary: Update movie
+      description: This can only be done by admin
+      operationId: updateMovie
+      parameters:
+        - name: id
+          in: path
+          description: Id of movie that need to be updated
+          required: true
+          schema:
+            type: integer
+
+        - name: name
+          in: query
+          description: Name of movie
+          required: false
+          schema:
+            type: string
+
+        - name: picture
+          in: query
+          description: Photo of movie
+          required: false
+          schema:
+            type: string
+
+        - name: info
+          in: query
+          description: Time information of movie
+          required: false
+          schema:
+            type: string
+
+        - name: actors
+          in: query
+          description: Actors of movie
+          required: false
+          schema:
+            type: string
+
+        - name: duration
+          in: query
+          description: Time information of movie
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: Updated movie object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Movie'
+        required: true
+
+      responses:
+        '201':
+          description: Movie is successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Movie was not found
+
+    delete:
+      tags:
+        - movie
+      security:
+        - bearer: [ admin ]
+      summary: Delete movie
+      description: This can only be done by admin
+      operationId: deleteMovie
+      parameters:
+        - name: id
+          in: path
+          description: The movie that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Opearation is succesuful
+        '404':
+          description: Movie not found
+
+  /movie/schedule:
+    get:
+      tags:
+      - movie
+      summary: Returns all affiche schedule
+      description: Option is available for not authorised users
+      operationId: getSchedule
+      responses:
+        '200':
+          description: all is ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '401':
+          description: Token not valid.
+    post:
+      tags:
+      - movie
+      security:
+        - bearer: [admin]
+      summary: Add some movie in affiche in specified day and time
+      description: Oppearation is allowed only for admin
+      operationId: addNewMovieToAffiche
+
+      parameters:
+      - name: movie_id
+        in: query
+        description: Id of Movie
+        required: true
+        schema:
+          $ref: '#/components/schemas/MovieSchedule'
+
+      - name: date
+        in: query
+        description: date of movie
+        required: true
+        schema:
+          $ref: '#/components/schemas/MovieSchedule'
+
+      - name: time
+        in: query
+        description: time of movie
+        required: true
+        schema:
+          $ref: '#/components/schemas/MovieSchedule'
+
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/MovieSchedule'
+
+      responses:
+        '200':
+          description: Specified film is added to affiche
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieSchedule'
+        '400':
+          description: Bad Request. Missing arguments
+        '409':
+          description: Conflict. Date and time is already exist
+        '404':
+          description: Specified movie id was not found
+
+  /movie/schedule/{id}:
+    get:
+      tags:
+      - movie
+      summary: Returns schedule by id
+      description: Oppearation is allowed for anyone
+      operationId: getScheduleById
+
+      parameters:
+      - name: id
+        in: path
+        description: Id of specified schedule
+        required: true
+        schema:
+          type: integer
+
+      responses:
+        '200':
+          description: Specified schedule is found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieSchedule'
+        '404':
+          description: Not found
+    put:
+      tags:
+        - movie
+      security:
+        - bearer: [ admin ]
+      summary: Update Movie schedule
+      description: This can only be done by admin
+      operationId: updateMovie
+      parameters:
+        - name: id
+          in: path
+          description: Id of movie that need to be updated
+          required: true
+          schema:
+            type: integer
+
+        - name: movie_id
+          in: query
+          description: movie id
+          required: false
+          schema:
+            type: string
+
+        - name: date
+          in: query
+          description: date of movie
+          required: false
+          schema:
+            type: string
+
+        - name: time
+          in: query
+          description: time of movie
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: Updated movie schedule
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/MovieSchedule'
+        required: true
+
+      responses:
+        '201':
+          description: Movie schedule was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieSchedule'
+        '404':
+          description: Movie Schedule was not found
+
+    delete:
+      tags:
+        - movie
+      security:
+        - bearer: [ admin ]
+      summary: Delete schedule of some movie
+      description: This can only be done by admin
+      operationId: deleteMovieSchedule
+      parameters:
+        - name: id
+          in: path
+          description: The movie schedule id that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Opearation is succesuful
+        '404':
+          description: Movie Schedule was not found
+
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          maxLength: 25
+          example: LaVuna
+        firstname:
+          type: string
+          maxLength: 25
+          example: Zohan
+        lastname:
+          type: string
+          maxLength: 25
+          example: KillWereWolf
+        email:
+          type: string
+          format: email
+          maxLength: 40
+          example: LaVuna@gmail.com
+        password:
+          type: string
+          maxLength: 40
+          example: VeryStrongPassword8943
+        phone_number:
+          type: string
+          maxLength: 20
+          example: '0631834619'
+        photo:
+          type: string
+          maxLength: 20
+          example: "photo.png"
+      required:
+        - id
+        - username
+        - firstname
+        - lastname
+        - email
+        - password
+
+    Movie:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          maxLength: 40
+          example: Onse upon in HollyWood...
+        picture:
+          type: string
+          maxLength: 30
+          example: 'movie.png'
+        info:
+          type: string
+          example: 'This movie is great'
+        actors:
+          type: string
+          example: 'Jonnie Depp, John Travolta'
+        duration:
+          type: string
+          format: time
+          example: '01:32:24'
+      required:
+        - id
+        - movie_name
+        - duration
+
+    Reservation:
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+          example: '2021-03-18'
+        time:
+          type: string
+          format: time
+          example: '14:55:00'
+        movie_id:
+          $ref: '#/components/schemas/Movie'
+        user_id:
+          $ref: '#/components/schemas/User'
+      required:
+        - id
+        - date
+        - time
+        - movie_id
+        - user_id
+
+    MovieSchedule:
+      properties:
+        id:
+          type: integer
+        movie_id:
+          $ref: '#/components/schemas/Movie'
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+      required:
+        - id
+        - movie_id
+        - date
+        - time
+
+
+
+
+
+
+
