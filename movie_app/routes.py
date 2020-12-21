@@ -65,17 +65,15 @@ def logout():
 
 @app.route('/user/reserve', methods=['POST'])
 def reserve():
-    movie_id = request.json.get('movie_id', '')
+    movie_schedule_id = request.json.get('movie_schedule_id', '')
     user_id = request.json.get('user_id', '')
-    date = request.json.get('date', '')
-    time = request.json.get('time', '')
 
-    if not movie_id or not user_id or not time or not date:
+    if not movie_schedule_id or not user_id:
         return jsonify(meta={"code": 400, "type": "Bad Request", "message": "Missing arguments"})
-    if session.query(MovieSchedule).filter_by(time=time, date=date, movie_id=movie_id).first() is None:
+    if session.query(MovieSchedule).get(movie_schedule_id) is None:
         return jsonify(meta={"code": 400, "type": "Bad Request", "message": "No such schedule on affiche"})
 
-    reservation = Reservation(date=date, time=time, movie_id=movie_id, user_id=user_id)
+    reservation = Reservation(movie_schedule_id=movie_schedule_id, user_id=user_id)
     session.add(reservation)
     session.commit()
     return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Place is reserved for %s"
@@ -237,5 +235,4 @@ def movie_schedule_id_handler(id):
         session.commit()
         return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie schedule is deleted"},
                        MovieSchedule=movie_schedule.serialize)
-
 

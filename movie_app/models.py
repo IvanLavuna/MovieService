@@ -75,31 +75,6 @@ class Movie(BaseModel):
         }
 
 
-class Reservation(BaseModel):
-    __tablename__ = 'reservation'
-
-    id = Column(Integer, primary_key=True)
-    date = Column(String(20), nullable=False)
-    time = Column(String(20), nullable=False)
-    movie_id = Column(Integer, ForeignKey('movie.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    movie = relationship(Movie)
-    user = relationship(User)
-
-    def __repr__(self):
-        return f"User('{self.date}','{self.time}','{self.movie_id}','{self.user_id}')"
-
-    @property
-    def serialize(self):
-        return {
-            "id": self.id,
-            "date": self.date,
-            "time": self.time,
-            "movie_id": self.movie,
-            "user_id": self.user_id
-        }
-
-
 class MovieSchedule(BaseModel):
     __tablename__ = 'movie_schedule'
 
@@ -121,3 +96,28 @@ class MovieSchedule(BaseModel):
             "time": self.time,
             "movie_id": self.movie_id
         }
+
+
+class Reservation(BaseModel):
+    __tablename__ = 'reservation'
+
+    id = Column(Integer, primary_key=True)
+    movie_schedule_id = Column(Integer, ForeignKey('movie_schedule.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+
+    movie_schedule = relationship(MovieSchedule)
+    user = relationship(User)
+
+    def __repr__(self):
+        return f"User('{self.movie_schedule_id}','{self.user_id}')"
+
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "date": self.movie_schedule.date,
+            "time": self.movie_schedule.time,
+            "movie_id": self.movie_schedule.movie_id,
+            "user_id": self.user_id
+        }
+
