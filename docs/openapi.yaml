@@ -11,8 +11,28 @@ tags:
   description: Operations about user
 - name: movie
   description: Information about movies and our affiche
-
+- name: schedule
+  description: Schedule of movie
 paths:
+  /user:
+    get:
+      tags:
+      - user
+      summary: Returns all users
+      description: Option is available for not authorised users
+      operationId: getUsers
+      responses:
+        '200':
+          description: all is ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '401':
+          description: Token not valid.
+
   /user/register:
     post:
       tags:
@@ -181,7 +201,128 @@ paths:
           description: Bad Request
         '500':
           description: All places are already reserved or no such date_time
+  /user/{id}:
+    get:
+      tags:
+      - user
+      summary: Returns user by id
+      description: Oppearation is allowed for anyone
+      operationId: getUserById
 
+      parameters:
+      - name: id
+        in: path
+        description: Id of specified user
+        required: true
+        schema:
+          type: integer
+
+      responses:
+        '200':
+          description: Specified user is found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '404':
+          description: Not found
+    put:
+      tags:
+        - user
+      security:
+        - bearer: [ admin ]
+      summary: Update user
+      description: This can only be done by admin
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: Id of user that needs to be updated
+          required: true
+          schema:
+            type: integer
+        - name: username
+          in: query
+          description: username
+          required: false
+          schema:
+            type: string
+        - name: firstname
+          in: query
+          description: firstname
+          required: false
+          schema:
+            type: string
+        - name: lastname
+          in: query
+          description: lastname
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: email of user
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: passwrod of user
+          required: false
+          schema:
+            type: string
+        - name: phone_number
+          in: query
+          description: phone number
+          required: false
+          schema:
+            type: string
+        - name: photo
+          in: query
+          description: photo
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+
+      responses:
+        '201':
+          description: Movie is successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User was not found
+
+    delete:
+      tags:
+        - user
+      security:
+        - bearer: [ admin ]
+      summary: Delete user
+      description: This can only be done by admin
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The user that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Opearation is succesuful
+        '404':
+          description: User not found
   /movie:
     get:
       tags:
@@ -379,10 +520,10 @@ paths:
         '404':
           description: Movie not found
 
-  /movie/schedule:
+  /schedule:
     get:
       tags:
-      - movie
+      - schedule
       summary: Returns all affiche schedule
       description: Option is available for not authorised users
       operationId: getSchedule
@@ -399,7 +540,7 @@ paths:
           description: Token not valid.
     post:
       tags:
-      - movie
+      - schedule
       security:
         - bearer: [admin]
       summary: Add some movie in affiche in specified day and time
@@ -449,10 +590,10 @@ paths:
         '404':
           description: Specified movie id was not found
 
-  /movie/schedule/{id}:
+  /schedule/{id}:
     get:
       tags:
-      - movie
+      - schedule
       summary: Returns schedule by id
       description: Oppearation is allowed for anyone
       operationId: getScheduleById
@@ -478,12 +619,12 @@ paths:
           description: Not found
     put:
       tags:
-        - movie
+        - schedule
       security:
         - bearer: [ admin ]
       summary: Update Movie schedule
       description: This can only be done by admin
-      operationId: updateMovie
+      operationId: updateMovieSchedule
       parameters:
         - name: id
           in: path
@@ -532,7 +673,7 @@ paths:
 
     delete:
       tags:
-        - movie
+        - schedule
       security:
         - bearer: [ admin ]
       summary: Delete schedule of some movie
