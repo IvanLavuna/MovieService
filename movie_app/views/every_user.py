@@ -16,12 +16,12 @@ def register():
 
     # checking if all required arguments were passed
     if not username or not firstname or not lastname or not email or not password:
-        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "Missing arguments"})
+        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "Missing arguments"}), 400
 
     # checking if such username or email already exist
     if session.query(User).filter_by(username=username).first() is not None or \
             session.query(User).filter_by(username=email).first() is not None:
-        return jsonify(meta={"code": 409, "type": "Conflict", "message": "Such username or email already exist"})
+        return jsonify(meta={"code": 409, "type": "Conflict", "message": "Such username or email already exist"}), 409
 
     new_user = User(username=username, firstname=firstname, lastname=lastname, email=email,
                     password_hash=User.hash_password(password), phone_number=phone_number, photo=photo)
@@ -42,10 +42,10 @@ def login():
         user = session.query(User).filter_by(email=email).first()
 
     if user is None:
-        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Try again"})
+        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Try again"}), 404
     if user.verify_password(password):
-        return jsonify(meta={"code": 200, "type": "OK", "message": "Success"})
-    return jsonify(meta={"code": 406, "type": "Not acceptable", "message": "Invalid data supplied"})
+        return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}), 200
+    return jsonify(meta={"code": 406, "type": "Not acceptable", "message": "Invalid data supplied"}), 406
 
 
 @app.route('/movie', methods=['GET'])
@@ -57,10 +57,10 @@ def get_movies():
 @app.route('/movie/<int:id>', methods=['GET'])
 def get_movie_by_id(id):
     if session.query(Movie.id).filter_by(id=id).scalar() is None:
-        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Movie with specified id was not found"})
+        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Movie with specified id was not found"}), 404
 
     movie = session.query(Movie).filter_by(id=id).one()
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, Movie=movie.serialize)
+    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, Movie=movie.serialize), 200
 
 
 @app.route('/schedule', methods=['GET'])
@@ -72,8 +72,8 @@ def get_movie_schedules():
 @app.route('/schedule/<int:id>', methods=['GET'])
 def get_movie_schedule_by_id(id):
     if session.query(MovieSchedule.id).filter_by(id=id).scalar() is None:
-        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Specified schedule was not found"})
+        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Specified schedule was not found"}), 404
 
     movie_schedule = session.query(MovieSchedule).get(id)
 
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, MovieSchedule=movie_schedule.serialize)
+    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, MovieSchedule=movie_schedule.serialize), 200

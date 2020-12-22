@@ -9,13 +9,13 @@ from movie_app.views import session, auth
 @auth.login_required
 def get_auth_token():
     token = g.user.generate_auth_token()
-    return jsonify({'token': token.decode('ascii')})
+    return jsonify({'token': token.decode('ascii')}), 200
 
 
 @app.route('/user/logout', methods=['GET'])
 @auth.login_required
 def logout():
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"})
+    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}), 200
 
 
 @app.route('/user/reserve', methods=['POST'])
@@ -25,12 +25,12 @@ def reserve():
     user_id = request.json.get('user_id', '')
 
     if not movie_schedule_id or not user_id:
-        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "Missing arguments"})
+        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "Missing arguments"}), 400
     if session.query(MovieSchedule).get(movie_schedule_id) is None:
-        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "No such schedule on affiche"})
+        return jsonify(meta={"code": 400, "type": "Bad Request", "message": "No such schedule on affiche"}), 400
 
     reservation = Reservation(movie_schedule_id=movie_schedule_id, user_id=user_id)
     session.add(reservation)
     session.commit()
     return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Place is reserved for %s"
-                                                               % session.query(User).get(user_id)})
+                                                               % session.query(User).get(user_id)}), 200

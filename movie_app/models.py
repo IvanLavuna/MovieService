@@ -67,6 +67,7 @@ class User(BaseModel):
         user_id = data['id']
         return user_id
 
+
 class Movie(BaseModel):
     __tablename__ = 'movie'
 
