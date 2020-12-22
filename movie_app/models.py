@@ -1,10 +1,10 @@
 import random
 import string
-
 from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
 engine = create_engine('mysql://root:password@localhost/cinema_db')
 engine.connect()
@@ -26,6 +26,7 @@ class User(BaseModel):
     password_hash = Column(String(240), nullable=False)
     phone_number = Column(String(25))
     photo = Column(String(50), default="men_who_watch_the_sky.jpg")
+    role = Column(String(64), default='user')
 
     def __repr__(self):
         return f"User('{self.username}','{self.firstname}','{self.lastname}','{self.email}','{self.phone_number}')"
@@ -36,6 +37,10 @@ class User(BaseModel):
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
+
+    def generate_auth_token(self, expiration=600):
+        s = Serializer(secret_key, expires_in=expiration)
+        return s.dumps({'id': self.id})
 
     @property
     def serialize(self):
@@ -49,6 +54,18 @@ class User(BaseModel):
             "photo": self.photo
         }
 
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None
+        except BadSignature:
+            return None
+
+        user_id = data['id']
+        return user_id
 
 class Movie(BaseModel):
     __tablename__ = 'movie'
