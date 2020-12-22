@@ -1,10 +1,8 @@
 from flask import jsonify, request, url_for, abort, g
-from movie_app import app
+from movie_app.views import app
 from movie_app.models import db_session, User, Movie, Reservation, MovieSchedule
 
 session = db_session()
-
-# TODO : rewrite it. Common stuff rewrite on fucntions below
 
 
 @app.route("/user", methods=["GET"])
