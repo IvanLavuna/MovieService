@@ -13,52 +13,6 @@ def get_all_user():
                    meta={"code": 200, "type": "OK", "message": "Success"}), 200
 
 
-@app.route('/user/<int:id>', methods=['PUT', 'GET', 'DELETE'])
-@auth.login_required
-@requires_roles('admin')
-def user_handler_by_id(id):
-    if session.query(User.id).filter_by(id=id).scalar() is None:
-        return jsonify(meta={"code": 404, "type": "Not Found", "message": "Specified user was not found"}), 400
-
-    user = session.query(User).get(id)
-    if request.method == 'GET':
-        return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, User=user.serialize), 200
-
-    if request.method == 'PUT':
-        username = request.json.get('username', '')
-        firstname = request.json.get('firstname', '')
-        lastname = request.json.get('lastname', '')
-        email = request.json.get('email', '')
-        password = request.json.get('password', '')
-        phone_number = request.json.get('phone_number', '')
-        photo = request.json.get('photo', '')
-        if username:
-            user.username = username
-        if firstname:
-            user.firstname = firstname
-        if lastname:
-            user.lastname = lastname
-        if email:
-            user.email = email
-        if password:
-            user.password_hash = User.hash_password(password)
-        if phone_number:
-            user.phone_number = phone_number
-        if photo:
-            user.photo = photo
-
-        session.add(user)
-        session.commit()
-        return jsonify(meta={"code": 201, "type": "OK", "message": "Success. User is updated"}, User=user.serialize), \
-               201
-
-    elif request.method == 'DELETE':
-        session.delete(user)
-        session.commit()
-        return jsonify(meta={"code": 200, "type": "OK", "message": "Success. User is deleted"}, User=user.serialize),\
-               200
-
-
 @app.route('/movie', methods=['POST'])
 @auth.login_required
 @requires_roles('admin')
