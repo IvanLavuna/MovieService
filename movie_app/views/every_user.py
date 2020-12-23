@@ -45,13 +45,13 @@ def login():
         return jsonify(meta={"code": 404, "type": "Not Found", "message": "Try again"}), 404
     if user.verify_password(password):
         return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}), 200
-    return jsonify(meta={"code": 406, "type": "Not acceptable", "message": "Invalid data supplied"}), 406
+    return jsonify(meta={"code": 406, "type": "Not Acceptable", "message": "Invalid data supplied"}), 406
 
 
 @app.route('/movie', methods=['GET'])
 def get_movies():
     movies = session.query(Movie).all()
-    return jsonify(Movies=[i.serialize for i in movies])
+    return jsonify(Movies=[i.serialize for i in movies]), 200
 
 
 @app.route('/movie/<int:id>', methods=['GET'])

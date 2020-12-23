@@ -74,8 +74,8 @@ def create_movie():
     new_movie = Movie(name=name, picture=picture, info=info, actors=actors, duration=duration)
     session.add(new_movie)
     session.commit()
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie is created"},
-                   Movie=new_movie.serialize), 200
+    return jsonify(meta={"code": 201, "type": "OK", "message": "Success. Movie is created"},
+                   Movie=new_movie.serialize), 201
 
 
 @app.route('/movie/<int:id>', methods=['PUT', 'DELETE'])

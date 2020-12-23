@@ -8,3 +8,6 @@ venv/
 # my scripts
 scripts/
 data/
+
+# .coverage
+.coverage

@@ -27,7 +27,7 @@ def requires_roles(*roles):
         @wraps(f)
         def wrapped(*args, **kwargs):
             if g.user.role not in roles:
-                return "You are not authorized to access this page\n"
+                return "You are not authorized to access this page\n", 401
             return f(*args, **kwargs)
         return wrapped
     return wrapper
