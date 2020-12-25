@@ -9,5 +9,9 @@ venv/
 scripts/
 data/
 
+<<<<<<< HEAD
 # .coverage
+=======
+# coverage
+>>>>>>> a786f0e44dca110abd84b4fd9d696e131e2a556e
 .coverage
