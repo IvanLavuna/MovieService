@@ -1,4 +1,4 @@
-from movie_app.models import db_session
+from movie_app import db_session
 from flask_httpauth import HTTPBasicAuth
 from movie_app.models import User
 from flask import g

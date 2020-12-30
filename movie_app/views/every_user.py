@@ -66,7 +66,7 @@ def get_movie_by_id(id):
 @app.route('/schedule', methods=['GET'])
 def get_movie_schedules():
     movie_schedules = session.query(MovieSchedule).all()
-    return jsonify(Movie_Schedules=[i.serialize for i in movie_schedules])
+    return jsonify(MovieSchedules=[i.serialize for i in movie_schedules])
 
 
 @app.route('/schedule/<int:id>', methods=['GET'])

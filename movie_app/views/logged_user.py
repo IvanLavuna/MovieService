@@ -33,8 +33,8 @@ def reserve():
     reservation = Reservation(movie_schedule_id=movie_schedule_id, user_id=user_id)
     session.add(reservation)
     session.commit()
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Place is reserved for %s"
-                                                               % session.query(User).get(user_id)}), 200
+    return jsonify(meta={"code": 201, "type": "Created", "message": "Success. Reservation is created for %s"
+                                                               % session.query(User).get(user_id)}), 201
 
 
 @app.route('/user/<int:id>', methods=['PUT', 'GET', 'DELETE'])
@@ -46,7 +46,7 @@ def user_handler_by_id(id):
     user = session.query(User).get(id)
 
     if g.user.id != id:
-        return jsonify(meta={"code": 406, "type": "Not Acceptable", "message": "No permission"}), 406
+        return jsonify(meta={"code": 403, "type": "Forbidden", "message": "No permission"}), 403
 
     if request.method == 'GET':
         return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, User=user.serialize), 200
@@ -76,8 +76,8 @@ def user_handler_by_id(id):
 
         session.add(user)
         session.commit()
-        return jsonify(meta={"code": 201, "type": "OK", "message": "Success. User is updated"}, User=user.serialize), \
-               201
+        return jsonify(meta={"code": 200, "type": "OK", "message": "Success. User is updated"}, User=user.serialize), \
+               200
 
     elif request.method == 'DELETE':
         session.delete(user)
