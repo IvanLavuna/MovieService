@@ -1,15 +1,13 @@
 import random
 import string
 from passlib.apps import custom_app_context as pwd_context
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.orm import relationship
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
-engine = create_engine('mysql://root:password@localhost/cinema_db')
-engine.connect()
-db_session = scoped_session(sessionmaker(bind=engine))
 BaseModel = declarative_base()
+
 
 # secret key to create and verify tokens
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
@@ -33,7 +31,7 @@ class User(BaseModel):
 
     @staticmethod
     def hash_password(password):
-        return pwd_context.encrypt(password)
+        return pwd_context.hash(password)
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)

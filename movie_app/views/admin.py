@@ -28,8 +28,8 @@ def create_movie():
     new_movie = Movie(name=name, picture=picture, info=info, actors=actors, duration=duration)
     session.add(new_movie)
     session.commit()
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie is created"},
-                   Movie=new_movie.serialize), 200
+    return jsonify(meta={"code": 201, "type": "OK", "message": "Success. Movie is created"},
+                   Movie=new_movie.serialize), 201
 
 
 @app.route('/movie/<int:id>', methods=['PUT', 'DELETE'])
@@ -59,10 +59,15 @@ def modify_movie(id):
             movie.duration = duration
         session.add(movie)
         session.commit()
-        return jsonify(meta={"code": 201, "type": "OK", "message": "Success. Movie is updated"},
-                       Movie=movie.serialize), 201
+        return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie is updated"},
+                       Movie=movie.serialize), 200
 
     elif request.method == 'DELETE':
+        movie_schedule = session.query(MovieSchedule).filter_by(movie_id=id).first()
+        if movie_schedule is not None:
+            return jsonify(meta={"code": 409, "type": "Conflict", "message": "There are some schedules on this movie."
+                                                                             "Delete them in order to delete this movie"},
+                           Movie=movie.serialize), 409
         session.delete(movie)
         session.commit()
         return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie is deleted"},
@@ -86,8 +91,8 @@ def create_movie_schedule():
     movie_schedule = MovieSchedule(movie_id=movie_id, date=date, time=time)
     session.add(movie_schedule)
     session.commit()
-    return jsonify(meta={"code": 200, "type": "OK", "message": "Success"},
-                   MovieSchedule=movie_schedule.serialize), 200
+    return jsonify(meta={"code": 201, "type": "Created", "message": "Movie schedule is created!"},
+                   MovieSchedule=movie_schedule.serialize), 201
 
 
 @app.route('/schedule/<int:id>', methods=['PUT', 'DELETE'])
@@ -115,8 +120,8 @@ def modify_movie_schedule(id):
             movie_schedule.time = time
         session.add(movie_schedule)
         session.commit()
-        return jsonify(meta={"code": 201, "type": "OK", "message": "Success. Movie schedule is updated"},
-                       MovieSchedule=movie_schedule.serialize), 201
+        return jsonify(meta={"code": 200, "type": "OK", "message": "Success. Movie schedule is `updated"},
+                       MovieSchedule=movie_schedule.serialize), 200
 
     if request.method == 'DELETE':
         session.delete(movie_schedule)
