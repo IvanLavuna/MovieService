@@ -8,10 +8,7 @@ venv/
 # my scripts
 scripts/bash/
 data/
-
-<<<<<<< HEAD
-# .coverage
-=======
+scripts/
+git-cheat-sheet.pdf
 # coverage
->>>>>>> a786f0e44dca110abd84b4fd9d696e131e2a556e
 .coverage
