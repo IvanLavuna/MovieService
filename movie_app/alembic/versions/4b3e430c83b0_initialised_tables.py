@@ -1,8 +1,8 @@
-"""Initial state
+"""Initialised tables
 
-Revision ID: 248e98e9ef43
+Revision ID: 4b3e430c83b0
 Revises: 
-Create Date: 2020-12-16 13:31:28.251023
+Create Date: 2021-04-30 12:07:02.038629
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '248e98e9ef43'
+revision = '4b3e430c83b0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,7 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=240), nullable=False),
     sa.Column('phone_number', sa.String(length=25), nullable=True),
     sa.Column('photo', sa.String(length=50), nullable=True),
+    sa.Column('role', sa.String(length=64), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -50,11 +51,9 @@ def upgrade():
     )
     op.create_table('reservation',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('date', sa.String(length=20), nullable=False),
-    sa.Column('time', sa.String(length=20), nullable=False),
-    sa.Column('movie_id', sa.Integer(), nullable=False),
+    sa.Column('movie_schedule_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['movie_id'], ['movie.id'], ),
+    sa.ForeignKeyConstraint(['movie_schedule_id'], ['movie_schedule.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

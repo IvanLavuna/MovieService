@@ -1,14 +1,12 @@
+import os
+import sys
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from alembic import context
-import os, sys
-
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '../../')))
-
-from movie_app.models import BaseModel
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -18,6 +16,7 @@ config = context.config
 fileConfig(config.config_file_name)
 
 
+from movie_app.models import BaseModel
 target_metadata = BaseModel.metadata
 
 # other values from the config, defined by the needs of env.py,
