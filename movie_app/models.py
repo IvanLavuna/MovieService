@@ -71,7 +71,7 @@ class Movie(BaseModel):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(40), nullable=False)
-    picture = Column(String(30), default="movie.png")
+    picture = Column(String(300), default="https://asianwiki.com/images/8/88/Default-KM-engsubtrailer.jpg")
     info = Column(String(500), default="...")
     actors = Column(String(200), default="...")
     duration = Column(String(20), nullable=False)
