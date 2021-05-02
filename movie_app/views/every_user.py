@@ -30,7 +30,7 @@ def register():
     return jsonify(User=new_user.serialize, meta={"code": 201, "type": "OK", "message": "Success"}), 201
 
 
-@app.route('/user/login', methods=['GET'])
+@app.route('/user/login', methods=['GET', 'POST'])
 def login():
     username = request.json.get('username', '')
     email = request.json.get('email', '')
@@ -44,7 +44,7 @@ def login():
     if user is None:
         return jsonify(meta={"code": 404, "type": "Not Found", "message": "Try again"}), 404
     if user.verify_password(password):
-        return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}), 200
+        return jsonify(meta={"code": 200, "type": "OK", "message": "Success"}, User=user.serialize), 200
     return jsonify(meta={"code": 406, "type": "Not Acceptable", "message": "Invalid data supplied"}), 406
 
 

@@ -23,7 +23,7 @@ class User(BaseModel):
     email = Column(String(40), unique=True, nullable=False)
     password_hash = Column(String(240), nullable=False)
     phone_number = Column(String(25))
-    photo = Column(String(50), default="men_who_watch_the_sky.jpg")
+    photo = Column(String(300), default="men_who_watch_the_sky.jpg")
     role = Column(String(64), default='user')
 
     def __repr__(self):
