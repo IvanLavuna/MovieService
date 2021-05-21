@@ -49,7 +49,8 @@ class User(BaseModel):
             "lastname": self.lastname,
             "email": self.email,
             "phone_number": self.phone_number,
-            "photo": self.photo
+            "photo": self.photo,
+            "role": self.role
         }
 
     @staticmethod
